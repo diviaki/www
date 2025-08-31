@@ -1,0 +1,14 @@
+<html><head><title>Diviaki</title>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" type="text/css" href="def.css" />
+<link rel="shortcut icon" type="image/gif" href="favicon.gif" />
+</head>
+<body>
+<h1 id="fundamentally-better-backup-with-zfs">Fundamentally better backup with ZFS</h1>
+<p><em>DEBRECEN, Hungary, Apr 18, 2019 (Ákos Diviánszky)</em></p>
+<p>Our company and it's infrastructure kept evolving since 1998. I took over sysadmin tasks in 2013 and in a couple of years I first virtualized then containerized all but the huge file server onto a Proxmox host. I've been glad reducing the server rooms energy consumption to a tiny fraction of the original, including eliminating the need for running AC.</p>
+<p>The heritage I took over included a LTO tape device where all our backups went using bacula. Somewhy I like tape technology.. it reminds me the time I had met my first computer, the C64 and all the hassle with dubbing cassettes and adjusting heads. But I did not like that each night bacula traversed all our filesystems looking for changes to back up. Also, once a month it took the bigger part of the night creating a full backup. There should be a way without frequent re-scanning and re-saving almost the same data over and over. I also disliked that the tape device shared the rack with the servers it backed up - a local incident might destroy both the originals and the backup. Reading about the sexy features of ZFS converted me and I reinstalled Proxmox with ZFS and migrated all servers, now including the file server.</p>
+<p>Now each night a snapshot is created on the ZFS root. That recursively snapshots all containers, and it takes a couple of seconds. Then according to our retention policy some snapshots are deleted in seconds too. A few minutes later a distant computer - a first generation Raspberry Pi - imports it's USB connected ZFS volume, connects to the host, and grabs the just created snapshots incrementally, then exports the volume and spins down the drive. This is controlled by two simple scripts, one for snapshotting, one for the transfer. The magical feature of the setup is that should a local incident occur I would fetch the distant disk, connect it to any spare workstation, boot up, rename the ZFS pool and have the server side up and running loosing only that data saved on that day.</p>
+<p>The server room had been the noisiest but now is the quitest place with one exception. Once a year I power the tape drive up, start a full tape backup so it starts humming and clanking in that very satisfying way.</p>
+</body></html>

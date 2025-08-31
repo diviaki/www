@@ -1,0 +1,30 @@
+html {
+  padding: 5pt;
+}
+
+body {
+	color: black;
+	font-size: 13pt;
+	line-height: 1.5;
+	font-family: Arial, sans-serif;
+	background: #E8E8E0;
+	text-align: justify;
+	max-width: 75ch;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+@media (min-width: 1250px) {
+	body {
+		margin-top: 10vh;
+	}
+}
+
+.more {
+	display: none;
+}
+
+img{
+	width:100%;
+	margin:0.5em auto;
+}

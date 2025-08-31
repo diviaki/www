@@ -1,0 +1,332 @@
+<html><head><title>Diviaki &heartsuit;</title>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="shortcut icon" type="image/gif" href="favicon.gif" />
+<style>
+body {
+        color: black;
+        font-size: 13pt;
+        font-family: arial;
+        background: #e8e8e0;
+}
+a:link    {color:#000000; text-decoration:none;}
+a:visited {color:#707070; text-decoration:none;}
+.sub td {font-size:7pt; color:#808080;}
+.noshow {display: none;}
+a.inactive {color:#a0a0a0; text-decoration:line-through}
+</style>
+</head>
+<body>
+<p style="text-align:right; margin:0; padding:0; font-size:10pt;">
+<span><a href="#" onclick="toggle('hu', this);return false;">Magyar</a></span> | 
+<span><a href="#" onclick="toggle('en', this);return false;">English</a></span></p>
+<hr>
+<center>
+
+<div style="display:flex;flex-wrap:wrap;max-width: 40em;">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="flex:1;min-width:18em">
+<tr class="hu"><td><a href="ugyesvagyjoutatapa.html">Ügyes vagy Apa, jó utat!</a></td></tr>
+<tr class="hu sub"><td>Debrecen, 2024. július 1. (Diviánszky Ákos)</td></tr>
+<tr class="hu" style="height:5px"></tr>
+<tr class="hu"><td><a href="2022-12-08-lassitas.html">Lassítás</a></td></tr>
+<tr class="hu sub"><td>Debrecen, 2022. december 8. (Diviánszky Ákos)</td></tr>
+<tr class="hu" style="height:5px"></tr>
+<tr class="hu"><td><a href="tempora-mutantur.html">Tempora mutantur</a></td></tr>
+<tr class="hu sub"><td>Debrecen, 2021. december 31. (Diviánszky Ákos)</td></tr>
+<tr class="hu" style="height:5px"></tr>
+<tr class="hu"><td><a href="hogyan-leszel-jatekfejleszto.html">Hogyan leszel játékfejlesztő</a></td></tr>
+<tr class="hu sub"><td>Debrecen, 2021. november 1. (Diviánszky Ákos)</td></tr>
+<tr class="hu" style="height:5px"></tr>
+<tr class="hu"><td><a href="refi-nyiregy.html">Félórában magamról</a></td></tr>
+<tr class="hu sub"><td>Debrecen, 2019. október 31. (Diviánszky Ákos)</td></tr>
+<tr class="hu" style="height:5px"></tr>
+<tr class="en"><td><a href="Developing-256k.html">Developing '256 k'</a></td></tr>
+<tr class="en sub"><td>DEBRECEN, Hungary, Oct 29, 2019 (Ákos Diviánszky)</td></tr>
+<tr class="en" style="height:5px"></tr>
+<tr class="en"><td><a href="zfs-fundamentally-better-backup.html">Fundamentally better backup with ZFS</a></td></tr>
+<tr class="en sub"><td>DEBRECEN, Hungary, Apr 18, 2019 (Ákos Diviánszky)</td></tr>
+<tr class="en" style="height:5px"></tr>
+<tr class="en"><td><a href="Developing-AR-Give-It-Up.html">Developing 'AR Give It Up!'</a></td></tr>
+<tr class="en sub"><td>DEBRECEN, Hungary, Dec 6, 2018 (Ákos Diviánszky)</td></tr>
+<tr class="en" style="height:5px"></tr>
+<tr class="hu"><td><a href="kenyer.html">Kenyérsütés egyszerűen</a></td></tr>
+<tr class="hu sub"><td>Debrecen, 2017. augusztus 16. (Diviánszky Ákos)</td></tr>
+<tr class="hu" style="height:5px"></tr>
+</table>
+
+<canvas style="width:20em;min-width:17em;margin:auto" id="ogl-canvas"></canvas>
+</div>
+
+<hr><small>✉ akos@au�.hu ✉</small></center></body>
+
+<script id="draw-shader-fs" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform vec2 iResolution;
+uniform vec2 iMouse;
+uniform float iTime;
+
+//shadertoy copy below
+// Xavier Benech
+// Mandala 2D
+//
+// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+
+#define PI 3.14159265
+
+#define aspect (iResolution.x/iResolution.y)
+
+float circle(vec2 p, float r, float width)
+{
+    float d = 0.;
+    d += smoothstep(1., 0., width*abs(p.x - r));
+    return d;
+}
+
+float arc(vec2 p, float r, float a, float width)
+{
+    float d = 0.;
+    if (abs(p.y) < a) {
+	    d += smoothstep(1., 0., width*abs(p.x - r));
+    }
+    return d;
+}
+
+
+float rose(vec2 p, float t, float width)
+{
+    const float a0 = 6.;
+    float d = 0.;
+    p.x *= 7. + 8. * t;
+    d += smoothstep(1., 0., width*abs(p.x - sin(a0*p.y)));
+    d += smoothstep(1., 0., width*abs(p.x - abs(sin(a0*p.y))));
+    d += smoothstep(1., 0., width*abs(abs(p.x) - sin(a0*p.y)));
+    d += smoothstep(1., 0., width*abs(abs(p.x) - abs(sin(a0*p.y))));
+    return d;
+}
+
+float rose2(vec2 p, float t, float width)
+{
+    const float a0 = 6.;
+    float d = 0.;
+    p.x *= 7. + 8. * t;
+    d += smoothstep(1., 0., width*abs(p.x - cos(a0*p.y)));
+    d += smoothstep(1., 0., width*abs(p.x - abs(cos(a0*p.y))));
+    d += smoothstep(1., 0., width*abs(abs(p.x) - cos(a0*p.y)));
+    d += smoothstep(1., 0., width*abs(abs(p.x) - abs(cos(a0*p.y))));
+    return d;
+}
+
+float spiral(vec2 p, float width)
+{
+    float d = 0.;
+    d += smoothstep(1., 0., width*abs(p.x - 0.5 * p.y / PI));
+    d += smoothstep(1., 0., width*abs(p.x - 0.5 * abs(p.y) / PI));
+    d += smoothstep(1., 0., width*abs(abs(p.x) - 0.5 * p.y / PI));
+    d += smoothstep(1., 0., width*abs(abs(p.x) - 0.5 * abs(p.y) / PI));
+    return d;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+ 	vec2 uv = fragCoord.xy / iResolution.xy;
+    vec2 p = uv - 0.5;
+    p *= 1.5;
+	p.x *= aspect;
+
+    vec2 f = vec2 ( sqrt(p.x*p.x + p.y*p.y), atan(p.y, p.x) );
+
+    float T0 = cos(0.3*iTime);
+    float T1 = 0.5 + 0.5 * cos(0.3*iTime);
+    
+    float m0 = 0.;
+    float m1 = 0.;
+    float m2 = 0.;
+    float m3 = 0.;
+    float m4 = 0.;
+    if (f.x < 0.7325) {
+        f.y += 0.1 * iTime;
+	    vec2 c;
+	    vec2 f2;
+        c = vec2(0.225 - 0.1*T0, PI / 4.);
+        if (f.x < 0.25) {
+            for (float i=0.; i < 2.; ++i) {
+                f2 = mod(f, c) - 0.5 * c;
+                m0 += spiral(vec2(f2.x, f2.y), 192.);
+            }
+    	}
+        c = vec2(0.225 + 0.1*T0, PI / 4.);
+        if (f.x > 0.43) {
+            for (float i=0.; i < 2.; ++i) {
+                f.y += PI / 8.;
+            	f2 = mod(f, c) - 0.5 * c;
+                m1 += rose((0.75-0.5*T0)*f2, 0.4*T1, 24.);
+                m1 += rose2((0.5+0.5*T1)*f2, 0.2 + 0.2*T0, 36.);
+            }
+	    }
+        c = vec2(0.6 - 0.2*T0, PI / 4.);
+        if (f.x > 0.265) {
+            for (float i=0.; i < 2.; ++i) {
+                f.y += PI / 8.;
+                f2 = mod(f, c) - 0.5 * c;
+                m2 += spiral(vec2((0.25 + 0.5*T1)*f2.x, f2.y), 392.);
+                m2 += rose2((1.+0.25*T0)*f2, 0.5, 24.);
+            }
+        }
+        c = vec2(0.4 + 0.23*T0, PI / 4.);
+        if (f.x < 0.265) {
+            for (float i=0.; i < 2.; ++i) {
+                f.y += PI / 8.;
+                f2 = mod(f, c) - 0.5 * c;
+                m3 += spiral(vec2(f2.x, f2.y), 256.);
+                m3 += rose(f2, 1.5 * T1, 16.);
+            }
+        }
+        m4 += circle(f, 0.040, 192.);
+        m4 += circle(f, 0.265, 192.);
+        m4 += circle(f, 0.430, 192.);
+    }
+    m4 += circle(f, 0.7325, 192.);
+
+    // color
+    float z = m0 + m1 + m2 + m3 + m4;
+    z *= z;
+    z = clamp(z, 0., 1.);
+        
+    fragColor = vec4( vec3(z*0.5), z );
+}
+//shadertoy end
+
+void main() 
+{
+    mainImage( gl_FragColor, gl_FragCoord.xy );
+}
+</script>
+
+<script id="draw-shader-vs" type="x-shader/x-vertex">
+attribute vec2 inPos;
+
+void main() 
+{
+    gl_Position = vec4(inPos, 0.0, 1.0);
+}
+</script>
+
+<script type="text/javascript">
+function byClass (el, cl) { return el ? el.getElementsByClassName(cl) : [] }
+function hasClass (el, cl) { var a = el.className.split(' '); return afind(cl, a) }
+function addClass (el, cl) { if (el) { var a = el.className.split(' '); if (!afind(cl, a)) { a.unshift(cl); el.className = a.join(' ')}} }
+function remClass (el, cl) { if (el) { var a = el.className.split(' '); arem(a, cl); el.className = a.join(' ') } }
+function vis(el, on) { if (el) { (on ? remClass : addClass)(el, 'nosee') } }
+function noShow (el) { addClass(el, 'noshow') }
+function elShow (el) { remClass(el, 'noshow') }
+function posf (f, a) { for (var i=0; i < a.length; i++) { if (f(a[i])) return i; } return -1; }
+function apos (x, a) { return (typeof x == 'function') ? posf(x,a) : Array.prototype.indexOf.call(a,x) }
+function afind (x, a) { var i = apos(x, a); return (i >= 0) ? a[i] : null; }
+function aeach (fn, a) { return Array.prototype.forEach.call(a, fn) }
+function arem (a, x) { var i = apos(x, a); if (i >= 0) { a.splice(i, 1); } return a; }
+function byClass (el, cl) { return el ? el.getElementsByClassName(cl) : [] }
+function allof (cl) { return byClass(document, cl) }
+function toggle(l,el){
+	if(hasClass(el,"inactive")){
+		aeach(elShow, allof(l))
+		remClass(el,"inactive")
+	}else{
+		aeach(noShow, allof(l))
+		addClass(el,"inactive")
+	}
+}
+function hu() { return allof('hu') }
+function recoll() {
+	//todo: get list of user languages, hide hu/en if only one of them is in the list
+	//aeach(noShow, hu());
+}
+function onready () {
+	recoll();
+}
+document.addEventListener("DOMContentLoaded", onready);
+
+
+//shader stuff
+(function loadscene() {    
+
+var canvas, gl, vp_size, prog, bufObj = {}, mousepos = [0, 0];
+
+function initScene() {
+
+    canvas = document.getElementById( "ogl-canvas");
+    gl = canvas.getContext( "experimental-webgl" );
+    if ( !gl )
+      return;
+
+    canvas.addEventListener('mousemove', (e) => {
+        mousepos = [e.clientX, e.clientY];
+    });
+
+    progDraw = gl.createProgram();
+    for (let i = 0; i < 2; ++i) {
+        let source = document.getElementById(i==0 ? "draw-shader-vs" : "draw-shader-fs").text;
+        let shaderObj = gl.createShader(i==0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
+        gl.shaderSource(shaderObj, source);
+        gl.compileShader(shaderObj);
+        let status = gl.getShaderParameter(shaderObj, gl.COMPILE_STATUS);
+        if (!status) alert(gl.getShaderInfoLog(shaderObj));
+        gl.attachShader(progDraw, shaderObj);
+        gl.linkProgram(progDraw);
+    }
+    status = gl.getProgramParameter(progDraw, gl.LINK_STATUS);
+    if ( !status ) alert(gl.getProgramInfoLog(progDraw));
+    progDraw.inPos = gl.getAttribLocation(progDraw, "inPos");
+    progDraw.iTime = gl.getUniformLocation(progDraw, "iTime");
+    progDraw.iMouse = gl.getUniformLocation(progDraw, "iMouse");
+    progDraw.iResolution = gl.getUniformLocation(progDraw, "iResolution");
+    gl.useProgram(progDraw);
+
+    var pos = [ -1, -1, 1, -1, 1, 1, -1, 1 ];
+    var inx = [ 0, 1, 2, 0, 2, 3 ];
+    bufObj.pos = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, bufObj.pos );
+    gl.bufferData( gl.ARRAY_BUFFER, new Float32Array( pos ), gl.STATIC_DRAW );
+    bufObj.inx = gl.createBuffer();
+    bufObj.inx.len = inx.length;
+    gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, bufObj.inx );
+    gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint16Array( inx ), gl.STATIC_DRAW );
+    gl.enableVertexAttribArray( progDraw.inPos );
+    gl.vertexAttribPointer( progDraw.inPos, 2, gl.FLOAT, false, 0, 0 ); 
+    
+    gl.enable( gl.DEPTH_TEST );
+    gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
+
+    window.onresize = resize;
+    resize();
+    requestAnimationFrame(render);
+}
+
+function resize() {
+    //vp_size = [gl.drawingBufferWidth, gl.drawingBufferHeight];
+    //vp_size = [window.innerWidth, window.innerHeight];
+    //vp_size = [256, 256]
+    vp_size = [512, 512]
+    canvas.width = vp_size[0];
+    canvas.height = vp_size[1];
+}
+
+function render(deltaMS) {
+
+    gl.viewport( 0, 0, canvas.width, canvas.height );
+    gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+   
+    gl.uniform1f(progDraw.iTime, deltaMS/1000.0);
+    gl.uniform2f(progDraw.iResolution, canvas.width, canvas.height);
+    gl.uniform2f(progDraw.iMouse, mousepos[0], mousepos[1]);
+    gl.drawElements( gl.TRIANGLES, bufObj.inx.len, gl.UNSIGNED_SHORT, 0 );
+    
+    requestAnimationFrame(render);
+}  
+
+initScene();
+
+})();
+</script>
+</html>
